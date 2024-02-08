@@ -37,7 +37,7 @@ orbs:
 
 job_environments:
   common_environment: &common_environment
-    APP_HOSTPATH: testfop
+    APP_HOSTPATH: planet4testfop
     CONTAINER_PREFIX: planet4-testfop
     WP_DB_NAME_PREFIX: planet4-testfop_wordpress
   develop_environment: &develop_environment
@@ -46,7 +46,7 @@ job_environments:
     CLOUDSQL_INSTANCE: p4-develop-k8s
     GOOGLE_PROJECT_ID: planet-4-151612
     GCLOUD_CLUSTER: p4-development
-    HELM_NAMESPACE: testfop-development
+    HELM_NAMESPACE: planet4testfop-development
     HELM_RELEASE: planet4-testfop
     WP_DB_NAME: planet4-testfop_wordpress_develop
     WP_STATELESS_BUCKET: planet4-testfop-stateless-develop
@@ -160,10 +160,7 @@ job_definitions:
 
 jobs:
   build-develop:
-    docker:
-      - image: greenpeaceinternational/p4-builder:php8.1
-        auth:
-          <<: *docker_auth
+    <<: *defaults
     environment:
       <<: *common_environment
       <<: *develop_environment
