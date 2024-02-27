@@ -27,7 +27,7 @@ docker_auth: &docker_auth
 
 defaults: &defaults
   docker:
-    - image: greenpeaceinternational/p4-builder:latest
+    - image: greenpeaceinternational/p4-builder:helm-3.14.2
       auth:
         <<: *docker_auth
 
@@ -175,7 +175,7 @@ jobs:
   create-test-user:
     working_directory: ~/
     docker:
-      - image: greenpeaceinternational/p4-builder:latest
+      - image: greenpeaceinternational/p4-builder:helm-3.14.2
         auth:
           <<: *docker_auth
     environment:
@@ -205,7 +205,7 @@ jobs:
   delete-test-user:
     working_directory: ~/
     docker:
-      - image: greenpeaceinternational/p4-builder:latest
+      - image: greenpeaceinternational/p4-builder:helm-3.14.2
         auth:
           <<: *docker_auth
     environment:
