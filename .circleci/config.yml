@@ -5,6 +5,9 @@ parameters:
   rollback:
     type: boolean
     default: false
+  rollback_to_version:
+    type: string
+    default: ""
 
   run_develop:
     default: true
@@ -196,6 +199,30 @@ job_definitions:
       - run: make copy
       - run: make persist
       - run: BUILD_TAG="${CIRCLE_TAG}" make deploy
+
+  rollback_production_manual_steps: &rollback_production_manual_steps
+    working_directory: ~/
+    steps:
+      - run: activate-gcloud-account.sh
+      - run: mkdir -p /tmp/workspace/var /tmp/workspace/src
+      - run: make checkout
+      - run: make copy
+      - run: make persist
+      - run:
+          name: Deploy Rollback Version
+          command: |
+            BUILD_TAG="<< pipeline.parameters.rollback_to_version >>"
+            if [[ -z "$BUILD_TAG" ]]; then
+              BUILD_TAG="${CIRCLE_TAG}"
+            fi
+
+            if [[ -z "$BUILD_TAG" ]]; then
+              echo "Error: No version specified for rollback and CIRCLE_TAG is empty."
+              exit 1
+            fi
+
+            echo "Deploying version: ${BUILD_TAG}"
+            BUILD_TAG="${BUILD_TAG}" make deploy
 
   rollback_db_steps: &rollback_db_steps
     working_directory: /tmp/workspace/src
@@ -444,6 +471,11 @@ workflow_definitions:
         ignore: /.*/
       tags:
         only: /^v.*/
+  on_rollback_trigger: &on_rollback_trigger
+    context: org-global
+    filters:
+      branches:
+        only: main
 
 workflows:
   develop:
@@ -524,6 +556,20 @@ workflows:
           <<: *on_release_tag
           requires:
             - hold-production-db
+  manual-rollback:
+    when:
+      and:
+        - << pipeline.parameters.rollback >>
+        - not:
+            equal: [ "", << pipeline.parameters.rollback_to_version >> ]
+    jobs:
+      - hold-production-manual:
+          <<: *on_rollback_trigger
+          type: approval
+      - rollback-production-manual:
+          <<: *on_rollback_trigger
+          requires:
+            - hold-production-manual
 
   sync-from-production:
     triggers:
