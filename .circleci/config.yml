@@ -356,6 +356,13 @@ jobs:
       <<: *production_environment
     <<: *rollback_steps
 
+  rollback-production-manual:
+    <<: *defaults
+    environment:
+      <<: *common_environment
+      <<: *production_environment
+    <<: *rollback_production_manual_steps
+
   rollback-production-db:
     <<: *defaults
     environment:
