@@ -531,15 +531,6 @@ workflows:
           is_prod: true
           requires:
             - hold-production
-      - hold-production-rollback:
-          <<: *on_release_tag
-          type: approval
-          requires:
-            - deploy-production
-      - rollback-production:
-          <<: *on_release_tag
-          requires:
-            - hold-production-rollback
   rollback:
     when: << pipeline.parameters.rollback >>
     jobs:
@@ -577,10 +568,6 @@ workflows:
           <<: *on_rollback_trigger
           requires:
             - hold-production-manual
-      - visualtests-compare:
-          <<: *on_rollback_trigger
-          requires:
-            - rollback-production-manual
 
   sync-from-production:
     triggers:
