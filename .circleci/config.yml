@@ -577,7 +577,7 @@ workflows:
           <<: *on_rollback_trigger
           requires:
             - hold-production-manual
-      - post-deploy-tests:
+      - visualtests-compare:
           <<: *on_rollback_trigger
           requires:
             - rollback-production-manual
