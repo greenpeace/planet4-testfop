@@ -577,6 +577,10 @@ workflows:
           <<: *on_rollback_trigger
           requires:
             - hold-production-manual
+      - post-deploy-tests:
+          <<: *on_rollback_trigger
+          requires:
+            - rollback-production-manual
 
   sync-from-production:
     triggers:
